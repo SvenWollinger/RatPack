@@ -20,7 +20,7 @@ public class EggLauncher implements Listener {
         if(event.getEntity().getShooter() instanceof Player) {
             Player thrower = (Player) event.getEntity().getShooter();
             ItemStack itemStack = thrower.getInventory().getItemInMainHand();
-            if(itemStack.getType() == Material.EGG && ratPack.isPlayerCrouching(thrower.getUniqueId().toString())) {
+            if(itemStack.getType() == Material.EGG && thrower.isSneaking()) {
                 event.setCancelled(true);
                 thrower.getInventory().setItemInMainHand(null);
                 for(int i = 0; i < itemStack.getAmount(); i++) {
