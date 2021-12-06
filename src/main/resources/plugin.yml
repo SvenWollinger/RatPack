@@ -1,0 +1,5 @@
+name: RatPack
+version: 0.1
+author: Sven Wollinger
+main: io.wollinger.ratpack.RatPack
+api-version: 1.18
