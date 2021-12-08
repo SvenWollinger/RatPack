@@ -9,12 +9,6 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class EggLauncher implements Listener {
-    RatPack ratPack;
-
-    public EggLauncher(RatPack ratPack) {
-        this.ratPack = ratPack;
-    }
-
     @EventHandler
     public void onThrow(ProjectileLaunchEvent event) {
         if(event.getEntity().getShooter() instanceof Player) {
