@@ -1,13 +1,18 @@
 # RatPack
 
-Plugin for my private minecraft server
+Plugin for my private minecraft server.
+
+Features
+----
+
+- No creeper block damage
+- Throw more then one egg at once by holding CTRL
 
 
 Installation
 ----
 
 Download/Build the jar and put it into your plugins folder.
-
 
 
 License
