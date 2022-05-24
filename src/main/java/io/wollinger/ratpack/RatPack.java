@@ -6,7 +6,7 @@ import io.wollinger.ratpack.commands.MooCommand;
 import io.wollinger.ratpack.commands.WaypointCommand;
 import io.wollinger.ratpack.features.EggLauncher;
 import io.wollinger.ratpack.features.NoCreeperBlockDamage;
-import org.bukkit.command.CommandExecutor;
+import io.wollinger.ratpack.features.waypoints.WaypointManager;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,19 +18,22 @@ public class RatPack extends JavaPlugin {
     public void onEnable() {
         LogManager.init(this);
 
-        LogManager.log("Saving config...", Level.INFO);
         saveDefaultConfig();
 
-        LogManager.log("Registering events...", Level.INFO);
+        LogManager.log("Initialising...", Level.INFO);
+        Utils.init(this);
+        WaypointManager.init(this);
+
+        //Init events
         getServer().getPluginManager().registerEvents(new EggLauncher(this), this);
         getServer().getPluginManager().registerEvents(new NoCreeperBlockDamage(this), this);
 
-        LogManager.log("Registering commands...", Level.INFO);
+        //Init commands
         registerCommand(new MooCommand(this));
         registerCommand(new WaypointCommand());
         registerCommand(new MarkerCommand());
 
-        LogManager.log("Enabled! Hello world!", Level.INFO);
+        LogManager.log("Done! Hello world!", Level.INFO);
     }
 
     public void registerCommand(CommandBase command) {
