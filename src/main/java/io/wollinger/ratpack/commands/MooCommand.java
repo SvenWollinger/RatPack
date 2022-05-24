@@ -2,22 +2,16 @@ package io.wollinger.ratpack.commands;
 
 import io.wollinger.ratpack.RatPack;
 import io.wollinger.ratpack.Utils;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 public class MooCommand implements CommandBase{
-    private RatPack plugin;
+    private final RatPack plugin;
+    private final String[] moos = new String[] {"moo", "mooo", "moOO", "MOO"};
 
     public MooCommand(RatPack plugin) {
         this.plugin = plugin;
@@ -56,10 +50,16 @@ public class MooCommand implements CommandBase{
                     Player p = (Player) sender;
                     p.playSound(p.getLocation(), Sound.ENTITY_COW_AMBIENT, 1F, 1F);
                 }
-                sender.sendMessage("<Cow> Moo...");
                 i++;
             }
         }.runTaskTimer(plugin, 0, 20);
+
+        StringBuilder mooMsg = new StringBuilder("<Cow>");
+        for(int i = 0; i < amount; i++) {
+            mooMsg.append(String.format(" %s ", moos[Utils.getRandomNumber(0, moos.length)]));
+        }
+        sender.sendMessage(mooMsg.toString());
+
         return true;
     }
 
