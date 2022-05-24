@@ -26,7 +26,7 @@ public class RatPack extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new NoCreeperBlockDamage(this), this);
 
         LogManager.log("Registering commands...", Level.INFO);
-        registerCommand(new MooCommand());
+        registerCommand(new MooCommand(this));
         registerCommand(new WaypointCommand());
         registerCommand(new MarkerCommand());
 

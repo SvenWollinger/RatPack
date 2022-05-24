@@ -7,7 +7,7 @@ depend: [BlueMap]
 commands:
   moo:
     description: Moo
-    usage: /<command>
+    usage: /<command> <amount>
   waypoint:
     description: Manage waypoints
     usage: /<command>
