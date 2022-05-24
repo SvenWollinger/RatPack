@@ -1,5 +1,6 @@
-package io.wollinger.ratpack;
+package io.wollinger.ratpack.features;
 
+import io.wollinger.ratpack.RatPack;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -20,6 +21,7 @@ public class NoCreeperBlockDamage implements Listener {
     public void onCreeperExplosion(final EntityExplodeEvent event) {
         if(!ratPack.getConfig().getBoolean("preventCreeperBlockDamage"))
             return;
+
         if (event.getEntityType().equals(EntityType.CREEPER)) {
             event.setCancelled(true);
             Entity entity = event.getEntity();

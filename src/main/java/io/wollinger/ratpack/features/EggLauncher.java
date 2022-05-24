@@ -1,5 +1,6 @@
-package io.wollinger.ratpack;
+package io.wollinger.ratpack.features;
 
+import io.wollinger.ratpack.RatPack;
 import org.bukkit.Material;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;

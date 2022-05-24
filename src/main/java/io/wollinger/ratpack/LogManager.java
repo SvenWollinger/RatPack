@@ -1,15 +1,16 @@
 package io.wollinger.ratpack;
 
-import org.bukkit.Bukkit;
-
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LogManager {
-    public static void log(String message, Level level) {
-        Bukkit.getLogger().log(level, "[RatPack] " + message);
+    private static Logger logger;
+
+    public static void init(RatPack plugin) {
+        logger = plugin.getLogger();
     }
 
-    public static void log(Boolean bool, Level level) {
-        Bukkit.getLogger().log(level, "[RatPack] " + bool);
+    public static void log(Object message, Level level) {
+        logger.log(level, message.toString());
     }
 }
