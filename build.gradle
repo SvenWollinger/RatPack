@@ -24,5 +24,6 @@ repositories {
 dependencies {
     implementation 'org.spigotmc:spigot-api:1.18-R0.1-SNAPSHOT'
     implementation 'com.github.BlueMap-Minecraft:BlueMapAPI:v1.7.0'
+    implementation 'org.json:json:20220320'
 }
 
