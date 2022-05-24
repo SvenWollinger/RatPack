@@ -1,12 +1,18 @@
 package io.wollinger.ratpack.commands;
 
+import io.wollinger.ratpack.LogManager;
 import io.wollinger.ratpack.features.waypoints.Waypoint;
 import io.wollinger.ratpack.features.waypoints.WaypointManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-public class WaypointCommand implements CommandBase {
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+
+public class WaypointCommand implements CommandBase, TabCompleter {
     private final static String USAGE = "Usage:";
     private final static String USAGE_CREATE =  "/waypoint create <id> <label>";
     private final static String USAGE_DELETE =  "/waypoint delete <id>";
@@ -58,5 +64,10 @@ public class WaypointCommand implements CommandBase {
     @Override
     public String getLabel() {
         return "waypoint";
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        return null;
     }
 }
