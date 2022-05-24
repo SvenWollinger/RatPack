@@ -49,16 +49,15 @@ public class MooCommand implements CommandBase{
 
             @Override
             public void run() {
-                if(i < finalAmount) {
-                    if(!isConsole) {
-                        Player p = (Player) sender;
-                        p.playSound(p.getLocation(), Sound.ENTITY_COW_AMBIENT, 1F, 1F);
-                    }
-                    sender.sendMessage("<Cow> Moo...");
-                    i++;
-                } else {
+                if(i >= finalAmount)
                     cancel();
+
+                if(!isConsole) {
+                    Player p = (Player) sender;
+                    p.playSound(p.getLocation(), Sound.ENTITY_COW_AMBIENT, 1F, 1F);
                 }
+                sender.sendMessage("<Cow> Moo...");
+                i++;
             }
         }.runTaskTimer(plugin, 0, 20);
         return true;
