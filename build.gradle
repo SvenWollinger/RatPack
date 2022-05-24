@@ -16,10 +16,13 @@ repositories {
     }
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url = 'https://oss.sonatype.org/content/repositories/central' }
+    maven { url = 'https://jitpack.io' }
+
     mavenLocal()
 }
 
 dependencies {
     implementation 'org.spigotmc:spigot-api:1.18-R0.1-SNAPSHOT'
+    implementation 'com.github.BlueMap-Minecraft:BlueMapAPI:v1.7.0'
 }
 
