@@ -10,6 +10,10 @@ public class LogManager {
         logger = plugin.getLogger();
     }
 
+    public static void log(Object message, Level level, Object... args) {
+        log(String.format(message.toString(), args), level);
+    }
+
     public static void log(Object message, Level level) {
         logger.log(level, message.toString());
     }

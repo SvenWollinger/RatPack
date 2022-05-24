@@ -4,3 +4,15 @@ author: Sven Wollinger
 main: io.wollinger.ratpack.RatPack
 api-version: 1.18
 depend: [BlueMap]
+commands:
+  moo:
+    description: Moo
+    usage: /<command>
+  waypoint:
+    description: Manage waypoints
+    usage: /<command>
+    aliases: [wp]
+  marker:
+    description: Manage markerst
+    usage: /<command>
+    aliases: [mk]
