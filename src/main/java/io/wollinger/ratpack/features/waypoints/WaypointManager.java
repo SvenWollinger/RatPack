@@ -3,6 +3,7 @@ package io.wollinger.ratpack.features.waypoints;
 import io.wollinger.ratpack.LogManager;
 import io.wollinger.ratpack.RatPack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 
@@ -23,5 +24,12 @@ public class WaypointManager {
 
     public static void removeWaypoint(String id) {
         waypoints.remove(id);
+    }
+
+    public static ArrayList<Waypoint> getWaypoints() {
+        ArrayList<Waypoint> wps = new ArrayList<>();
+        for(String key : waypoints.keySet())
+            wps.add(waypoints.get(key));
+        return wps;
     }
 }
