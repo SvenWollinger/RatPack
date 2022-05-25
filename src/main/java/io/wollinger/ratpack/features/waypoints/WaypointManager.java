@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.logging.Level;
 
 public class WaypointManager {
+    public static final int MAX_LABEL_LENGTH = 20;
+
     private static HashMap<String, Waypoint> waypoints = new HashMap<>();
 
     public static void init(RatPack plugin) {

@@ -36,12 +36,15 @@ public class WaypointCommand implements CommandBase, TabCompleter {
     private final static String CMD_DELETE              = "delete";
     private final static String CMD_EXPORT              = "export";
 
-    private final static String LIST_STR_TRACK          = "[Track]";
+    private final static String LIST_STR_LABEL          = ChatColor.LIGHT_PURPLE + "%s" + ChatColor.RESET;
+    private final static String LIST_STR_TRACK          = ChatColor.BLUE + "[track]" + ChatColor.RESET;
+    private final static String LIST_STR_DELETE         = ChatColor.RED + "[X]" + ChatColor.RESET;
     private final static String LIST_STR_ID_DISPLAY     = "ID: %s";
     private final static String LIST_STR_POS_DISPLAY    = "x: %d, y: %d, z: %d";
     private final static String LIST_STR_POS_COPY       = "%d %d %d";
     private final static String LIST_STR_TRACK_CMD      = "/waypoint track %s";
-    private final static String LIST_STR_DISTANCE       = "[%s blocks away]";
+    private final static String LIST_STR_DELETE_CMD     = "/waypoint delete %s";
+    private final static String LIST_STR_DISTANCE       = "(%s blocks away)";
 
 
     @Override
@@ -70,16 +73,15 @@ public class WaypointCommand implements CommandBase, TabCompleter {
 
         for(Waypoint wp : WaypointManager.getWaypoints()) {
             Location wpLoc = wp.getLocation();
+            String wpLabel              = String.format(LIST_STR_LABEL, wp.getLabel());
             String wpDistance           = String.format(LIST_STR_DISTANCE, (int) wpLoc.distance(player.getLocation()));
             String wpLocation           = String.format(LIST_STR_POS_DISPLAY, wpLoc.getBlockX(), wpLoc.getBlockY(), wpLoc.getBlockZ());
             String wpLocationCopy       = String.format(LIST_STR_POS_COPY, wpLoc.getBlockX(), wpLoc.getBlockY(), wpLoc.getBlockZ());
             String wpID                 = String.format(LIST_STR_ID_DISPLAY, wp.getId());
-            String wpCMD                = String.format(LIST_STR_TRACK_CMD, wp.getId());
+            String wpTrackCMD           = String.format(LIST_STR_TRACK_CMD, wp.getId());
+            String wpDeleteCMD          = String.format(LIST_STR_DELETE_CMD, wp.getId());
 
-            TextComponent trackText = new TextComponent(LIST_STR_TRACK);
-            trackText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, wpCMD));
-
-            TextComponent labelText = new TextComponent(wp.getLabel());
+            TextComponent labelText = new TextComponent(wpLabel);
             labelText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(wpID)));
             labelText.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, wp.getId()));
 
@@ -87,9 +89,18 @@ public class WaypointCommand implements CommandBase, TabCompleter {
             distanceText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(wpLocation)));
             distanceText.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, wpLocationCopy));
 
-            BaseComponent[] components = new ComponentBuilder(trackText)
-                    .append(" ").append(labelText)
+            TextComponent trackText = new TextComponent(LIST_STR_TRACK);
+            trackText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("This will track this waypoint")));
+            trackText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, wpTrackCMD));
+
+            TextComponent deleteText = new TextComponent(LIST_STR_DELETE);
+            deleteText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("This can be undone until the server restarts with /waypoint undelete <id>")));
+            deleteText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, wpDeleteCMD));
+
+            BaseComponent[] components = new ComponentBuilder(labelText)
                     .append(" ").append(distanceText)
+                    .append(" ").append(trackText)
+                    .append(" ").append(deleteText)
                     .create();
             player.spigot().sendMessage(components);
         }
@@ -117,6 +128,11 @@ public class WaypointCommand implements CommandBase, TabCompleter {
             label.append(args[i]);
             if(i != args.length - 1)
                 label.append(" ");
+        }
+
+        if(label.length() > WaypointManager.MAX_LABEL_LENGTH) {
+            player.sendMessage(String.format("Max length for label names is %d!", WaypointManager.MAX_LABEL_LENGTH));
+            return;
         }
 
         WaypointManager.addWaypoint(new Waypoint(id, label.toString(), player.getLocation()));
