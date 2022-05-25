@@ -1,11 +1,13 @@
 package io.wollinger.ratpack.commands;
 
+import com.flowpowered.math.vector.Vector3d;
 import io.wollinger.ratpack.features.waypoints.Waypoint;
 import io.wollinger.ratpack.features.waypoints.WaypointManager;
 import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.chat.hover.content.Content;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -33,6 +35,13 @@ public class WaypointCommand implements CommandBase, TabCompleter {
     private final static String CMD_DELETE =    "delete";
     private final static String CMD_EXPORT =    "export";
 
+    private final static String LIST_STR_TRACK = "[Track]";
+    private final static String LIST_STR_ID_DISPLAY = "ID: %s";
+    private final static String LIST_STR_POS_DISPLAY = "x: %d, y: %d, z: %d";
+    private final static String LIST_STR_TRACK_CMD = "/waypoint track %s";
+    private final static String LIST_STR_DISTANCE = "[%s blocks away]";
+
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 0 || args[0].equals("help") || args[0].equals("?")) {
@@ -55,20 +64,30 @@ public class WaypointCommand implements CommandBase, TabCompleter {
         TextComponent title = new TextComponent("Waypoints:");
         title.setUnderlined(true);
         player.spigot().sendMessage(title);
+        player.sendMessage("");
 
         for(Waypoint wp : WaypointManager.getWaypoints()) {
-            int distance = (int) wp.getLocation().distance(player.getLocation());
-            TextComponent text = new TextComponent(wp.getLabel());
+            Location wpLoc = wp.getLocation();
+            String wpDistance = String.format(LIST_STR_DISTANCE, (int) wpLoc.distance(player.getLocation()));
+            String wpLocation = String.format(LIST_STR_POS_DISPLAY, wpLoc.getBlockX(), wpLoc.getBlockY(), wpLoc.getBlockZ());
+            String wpID = String.format(LIST_STR_ID_DISPLAY, wp.getId());
+            String wpCMD = String.format(LIST_STR_TRACK_CMD, wp.getId());
 
-            HoverEvent labelHover = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(String.format("ID: %s", wp.getId())));
-            text.setHoverEvent(labelHover);
+            TextComponent trackText = new TextComponent(LIST_STR_TRACK);
+            trackText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, wpCMD));
 
-            ClickEvent labelClick = new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/waypoint track %s", wp.getId()));
-            text.setClickEvent(labelClick);
+            TextComponent labelText = new TextComponent(wp.getLabel());
+            labelText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(wpID)));
 
+            TextComponent distanceText = new TextComponent(wpDistance));
+            distanceText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(wpLocation)));
 
-
-            player.spigot().sendMessage(text);
+            BaseComponent[] components = new ComponentBuilder(trackText)
+                    .append("").retain(ComponentBuilder.FormatRetention.NONE)
+                    .append(" ").append(labelText)
+                    .append(" ").append(distanceText)
+                    .create();
+            player.spigot().sendMessage(components);
         }
     }
 
