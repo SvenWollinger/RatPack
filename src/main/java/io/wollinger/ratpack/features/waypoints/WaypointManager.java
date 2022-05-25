@@ -22,8 +22,15 @@ public class WaypointManager {
         waypoints.remove(waypoint.getId());
     }
 
-    public static void removeWaypoint(String id) {
+    public static boolean hasWaypoint(String id) {
+        return waypoints.containsKey(id);
+    }
+
+    public static boolean removeWaypoint(String id) {
+        if(!waypoints.containsKey(id))
+            return false;
         waypoints.remove(id);
+        return true;
     }
 
     public static ArrayList<Waypoint> getWaypoints() {

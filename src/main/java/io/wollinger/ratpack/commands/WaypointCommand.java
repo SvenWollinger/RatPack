@@ -14,40 +14,49 @@ import java.util.List;
 
 public class WaypointCommand implements CommandBase, TabCompleter {
     private final static String USAGE = "Usage:";
+    //Make ids clickable! Raw msgs!
+    private final static String USAGE_LIST   =  "/waypoint list";
+    private final static String USAGE_TRACK  =  "/waypoint track <id>";
     private final static String USAGE_CREATE =  "/waypoint create <id> <label>";
     private final static String USAGE_DELETE =  "/waypoint delete <id>";
     private final static String USAGE_EDIT =    "/waypoint edit <id> (label|id) <input>";
     private final static String USAGE_EXPORT =  "/waypoint export bluemap";
 
-    private final static String CREATE_CMD = "create";
-    private final static String EDIT_CMD = "edit";
-    private final static String DELETE_CMD = "delete";
-    private final static String EXPORT_CMD = "export";
-
+    private final static String CMD_LIST =      "list";
+    private final static String CMD_TRACK =     "track";
+    private final static String CMD_CREATE =    "create";
+    private final static String CMD_EDIT =      "edit";
+    private final static String CMD_DELETE =    "delete";
+    private final static String CMD_EXPORT =    "export";
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 0 || args[0].equals("help") || args[0].equals("?")) {
-            sender.sendMessage(USAGE, USAGE_CREATE, USAGE_DELETE, USAGE_EDIT, USAGE_EXPORT);
+            sender.sendMessage(USAGE, USAGE_LIST, USAGE_TRACK, USAGE_CREATE, USAGE_DELETE, USAGE_EDIT, USAGE_EXPORT);
             return true;
         }
 
-
         switch(args[0]) {
-            case CREATE_CMD:
-                create(args, (Player)sender);
-                break;
-            case EDIT_CMD:
-                break;
-            case DELETE_CMD:
-                break;
-            case EXPORT_CMD:
-                break;
-
+            case CMD_LIST   ->  list(args, (Player)sender);
+            case CMD_TRACK  ->  track(args, (Player)sender);
+            case CMD_CREATE ->  create(args, (Player)sender);
+            case CMD_EDIT   ->  edit(args, (Player)sender);
+            case CMD_DELETE ->  delete(args, (Player)sender);
+            case CMD_EXPORT ->  export(args, (Player)sender);
         }
-
-
         return true;
+    }
+
+    private void list(String[] args, Player player) {
+        ArrayList<Waypoint> wps = WaypointManager.getWaypoints();
+        player.sendMessage("Waypoints:");
+        for(Waypoint wp : wps) {
+            player.sendMessage(String.format("%s (%s), %d", wp.getLabel(), wp.getId(), wp.getLocation().distance(player.getLocation())));
+        }
+    }
+
+    private void track(String[]args, Player player) {
+
     }
 
     private void create(String[] args, Player player) {
@@ -55,7 +64,14 @@ public class WaypointCommand implements CommandBase, TabCompleter {
             player.sendMessage(USAGE, USAGE_CREATE);
             return;
         }
-        String id = args[1];
+
+        final String id = args[1];
+
+        if(WaypointManager.hasWaypoint(id)) {
+            player.sendMessage("Waypoint already exists! Try /waypoint edit ?");
+            return;
+        }
+
         StringBuilder label = new StringBuilder();
         for(int i = 2; i < args.length; i++) {
             label.append(args[i]);
@@ -67,6 +83,26 @@ public class WaypointCommand implements CommandBase, TabCompleter {
         player.sendMessage(String.format("Waypoint %s created!", label));
     }
 
+    private void edit(String[] args, Player player) {
+
+    }
+
+    private void delete(String[] args, Player player) {
+        if(args.length <= 1) {
+            player.sendMessage(USAGE, USAGE_DELETE);
+            return;
+        }
+        final String id = args[1];
+        if(WaypointManager.removeWaypoint(id))
+            player.sendMessage("Waypoint deleted!");
+        else
+            player.sendMessage("Waypoint not found!");
+    }
+
+    private void export(String[] args, Player player) {
+
+    }
+
     @Override
     public String getLabel() {
         return "waypoint";
@@ -75,7 +111,7 @@ public class WaypointCommand implements CommandBase, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if(args.length <= 1) {
-            ArrayList<String> allOptions = new ArrayList<>(Arrays.asList(CREATE_CMD, EDIT_CMD, DELETE_CMD, EXPORT_CMD));
+            ArrayList<String> allOptions = new ArrayList<>(Arrays.asList(CMD_CREATE, CMD_EDIT, CMD_DELETE, CMD_EXPORT));
             if(args[0].isEmpty())
                 return allOptions;
 
