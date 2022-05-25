@@ -1,10 +1,8 @@
 package io.wollinger.ratpack.commands;
 
-import com.flowpowered.math.vector.Vector3d;
 import io.wollinger.ratpack.features.waypoints.Waypoint;
 import io.wollinger.ratpack.features.waypoints.WaypointManager;
 import net.md_5.bungee.api.chat.*;
-import net.md_5.bungee.api.chat.hover.content.Content;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -12,7 +10,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +18,7 @@ import java.util.List;
 
 public class WaypointCommand implements CommandBase, TabCompleter {
     private final static String USAGE = "Usage:";
-    //Make ids clickable! Raw msgs!
+
     private final static String USAGE_LIST              = "/waypoint list";
     private final static String USAGE_TRACK             = "/waypoint track <id>";
     private final static String USAGE_CREATE            = "/waypoint create <id> <label>";
@@ -66,6 +63,12 @@ public class WaypointCommand implements CommandBase, TabCompleter {
     }
 
     private void list(String[] args, Player player) {
+        if(WaypointManager.getWaypoints().isEmpty()) {
+            //TODO: Only track waypoints of current world
+            player.sendMessage("No waypoints available");
+            return;
+        }
+
         TextComponent title = new TextComponent("Waypoints:");
         title.setUnderlined(true);
         player.spigot().sendMessage(title);
@@ -81,6 +84,10 @@ public class WaypointCommand implements CommandBase, TabCompleter {
             String wpTrackCMD           = String.format(LIST_STR_TRACK_CMD, wp.getId());
             String wpDeleteCMD          = String.format(LIST_STR_DELETE_CMD, wp.getId());
 
+            TextComponent trackText = new TextComponent(LIST_STR_TRACK);
+            trackText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("This will track this waypoint")));
+            trackText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, wpTrackCMD));
+
             TextComponent labelText = new TextComponent(wpLabel);
             labelText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(wpID)));
             labelText.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, wp.getId()));
@@ -89,17 +96,13 @@ public class WaypointCommand implements CommandBase, TabCompleter {
             distanceText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(wpLocation)));
             distanceText.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, wpLocationCopy));
 
-            TextComponent trackText = new TextComponent(LIST_STR_TRACK);
-            trackText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("This will track this waypoint")));
-            trackText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, wpTrackCMD));
-
             TextComponent deleteText = new TextComponent(LIST_STR_DELETE);
             deleteText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("This can be undone until the server restarts with /waypoint undelete <id>")));
             deleteText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, wpDeleteCMD));
 
-            BaseComponent[] components = new ComponentBuilder(labelText)
+            BaseComponent[] components = new ComponentBuilder(trackText)
+                    .append(" ").append(labelText)
                     .append(" ").append(distanceText)
-                    .append(" ").append(trackText)
                     .append(" ").append(deleteText)
                     .create();
             player.spigot().sendMessage(components);
@@ -149,6 +152,7 @@ public class WaypointCommand implements CommandBase, TabCompleter {
             return;
         }
         final String id = args[1];
+        //TODO: Add undo text
         if(WaypointManager.removeWaypoint(id))
             player.sendMessage("Waypoint deleted!");
         else
