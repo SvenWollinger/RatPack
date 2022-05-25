@@ -12,6 +12,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,25 +22,26 @@ import java.util.List;
 public class WaypointCommand implements CommandBase, TabCompleter {
     private final static String USAGE = "Usage:";
     //Make ids clickable! Raw msgs!
-    private final static String USAGE_LIST   =  "/waypoint list";
-    private final static String USAGE_TRACK  =  "/waypoint track <id>";
-    private final static String USAGE_CREATE =  "/waypoint create <id> <label>";
-    private final static String USAGE_DELETE =  "/waypoint delete <id>";
-    private final static String USAGE_EDIT =    "/waypoint edit <id> (label|id) <input>";
-    private final static String USAGE_EXPORT =  "/waypoint export bluemap";
+    private final static String USAGE_LIST              = "/waypoint list";
+    private final static String USAGE_TRACK             = "/waypoint track <id>";
+    private final static String USAGE_CREATE            = "/waypoint create <id> <label>";
+    private final static String USAGE_DELETE            = "/waypoint delete <id>";
+    private final static String USAGE_EDIT              = "/waypoint edit <id> (label|id) <input>";
+    private final static String USAGE_EXPORT            = "/waypoint export bluemap";
 
-    private final static String CMD_LIST =      "list";
-    private final static String CMD_TRACK =     "track";
-    private final static String CMD_CREATE =    "create";
-    private final static String CMD_EDIT =      "edit";
-    private final static String CMD_DELETE =    "delete";
-    private final static String CMD_EXPORT =    "export";
+    private final static String CMD_LIST                = "list";
+    private final static String CMD_TRACK               = "track";
+    private final static String CMD_CREATE              = "create";
+    private final static String CMD_EDIT                = "edit";
+    private final static String CMD_DELETE              = "delete";
+    private final static String CMD_EXPORT              = "export";
 
-    private final static String LIST_STR_TRACK = "[Track]";
-    private final static String LIST_STR_ID_DISPLAY = "ID: %s";
-    private final static String LIST_STR_POS_DISPLAY = "x: %d, y: %d, z: %d";
-    private final static String LIST_STR_TRACK_CMD = "/waypoint track %s";
-    private final static String LIST_STR_DISTANCE = "[%s blocks away]";
+    private final static String LIST_STR_TRACK          = "[Track]";
+    private final static String LIST_STR_ID_DISPLAY     = "ID: %s";
+    private final static String LIST_STR_POS_DISPLAY    = "x: %d, y: %d, z: %d";
+    private final static String LIST_STR_POS_COPY       = "%d %d %d";
+    private final static String LIST_STR_TRACK_CMD      = "/waypoint track %s";
+    private final static String LIST_STR_DISTANCE       = "[%s blocks away]";
 
 
     @Override
@@ -68,22 +70,24 @@ public class WaypointCommand implements CommandBase, TabCompleter {
 
         for(Waypoint wp : WaypointManager.getWaypoints()) {
             Location wpLoc = wp.getLocation();
-            String wpDistance = String.format(LIST_STR_DISTANCE, (int) wpLoc.distance(player.getLocation()));
-            String wpLocation = String.format(LIST_STR_POS_DISPLAY, wpLoc.getBlockX(), wpLoc.getBlockY(), wpLoc.getBlockZ());
-            String wpID = String.format(LIST_STR_ID_DISPLAY, wp.getId());
-            String wpCMD = String.format(LIST_STR_TRACK_CMD, wp.getId());
+            String wpDistance           = String.format(LIST_STR_DISTANCE, (int) wpLoc.distance(player.getLocation()));
+            String wpLocation           = String.format(LIST_STR_POS_DISPLAY, wpLoc.getBlockX(), wpLoc.getBlockY(), wpLoc.getBlockZ());
+            String wpLocationCopy       = String.format(LIST_STR_POS_COPY, wpLoc.getBlockX(), wpLoc.getBlockY(), wpLoc.getBlockZ());
+            String wpID                 = String.format(LIST_STR_ID_DISPLAY, wp.getId());
+            String wpCMD                = String.format(LIST_STR_TRACK_CMD, wp.getId());
 
             TextComponent trackText = new TextComponent(LIST_STR_TRACK);
             trackText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, wpCMD));
 
             TextComponent labelText = new TextComponent(wp.getLabel());
             labelText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(wpID)));
+            labelText.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, wp.getId()));
 
-            TextComponent distanceText = new TextComponent(wpDistance));
+            TextComponent distanceText = new TextComponent(wpDistance);
             distanceText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(wpLocation)));
+            distanceText.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, wpLocationCopy));
 
             BaseComponent[] components = new ComponentBuilder(trackText)
-                    .append("").retain(ComponentBuilder.FormatRetention.NONE)
                     .append(" ").append(labelText)
                     .append(" ").append(distanceText)
                     .create();
