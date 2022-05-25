@@ -2,6 +2,10 @@ package io.wollinger.ratpack.commands;
 
 import io.wollinger.ratpack.features.waypoints.Waypoint;
 import io.wollinger.ratpack.features.waypoints.WaypointManager;
+import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.hover.content.Content;
+import net.md_5.bungee.api.chat.hover.content.Text;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -48,10 +52,23 @@ public class WaypointCommand implements CommandBase, TabCompleter {
     }
 
     private void list(String[] args, Player player) {
-        ArrayList<Waypoint> wps = WaypointManager.getWaypoints();
-        player.sendMessage("Waypoints:");
-        for(Waypoint wp : wps) {
-            player.sendMessage(String.format("%s (%s), %d", wp.getLabel(), wp.getId(), wp.getLocation().distance(player.getLocation())));
+        TextComponent title = new TextComponent("Waypoints:");
+        title.setUnderlined(true);
+        player.spigot().sendMessage(title);
+
+        for(Waypoint wp : WaypointManager.getWaypoints()) {
+            int distance = (int) wp.getLocation().distance(player.getLocation());
+            TextComponent text = new TextComponent(wp.getLabel());
+
+            HoverEvent labelHover = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(String.format("ID: %s", wp.getId())));
+            text.setHoverEvent(labelHover);
+
+            ClickEvent labelClick = new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/waypoint track %s", wp.getId()));
+            text.setClickEvent(labelClick);
+
+
+
+            player.spigot().sendMessage(text);
         }
     }
 
